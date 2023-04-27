@@ -1,0 +1,7 @@
+
+loggerator:
+  host: localhost
+  count: 800000
+  port: 8080
+  seed: 1
+

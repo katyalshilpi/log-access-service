@@ -1,0 +1,16 @@
+info:
+  # The name of the application; displayed on the /int/info page
+  name: log-access-service
+  # The version of the application; displayed on the /int/info page. Set by Bamboo.
+  version: 0-SNAPSHOT
+
+shell:
+  ssh:
+    enabled: false
+
+server:
+  port: 18080
+
+spring:
+  application:
+    name: log-access-service
