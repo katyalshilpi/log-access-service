@@ -43,7 +43,7 @@ public class LogAccessServiceTest {
 
   @Test
   public void testWithCodeUserMethod() throws Exception {
-    String code = "200", user = "POST", method = "annstewart";
+    String code = "200", method = "POST", user = "annstewart";
     when(mockLogerratorAccessor.getLogs(code, method, user)).thenReturn(logResponse);
     String result1 = logAccessService.getLogs(code, method, user).get(0).toString();
     assertEquals("Log result does not match", jpmcLog1.toString(), result1);
@@ -72,7 +72,7 @@ public class LogAccessServiceTest {
 
   @Test
   public void testWithCodeUser() throws Exception {
-    String code = "200", user = null, method = "annstewart";
+    String code = "200", method = null, user = "annstewart";
     List<JPMCLog> list = new LinkedList<>();
     when(mockLogerratorAccessor.getLogs(code, method, user)).thenReturn(logResponse);
     String result1 = logAccessService.getLogs(code, method, user).get(0).toString();
@@ -81,7 +81,7 @@ public class LogAccessServiceTest {
 
   @Test
   public void testWithOnlyCode() throws Exception {
-    String code = "200", user = null, method = null;
+    String code = "200", method = null, user = null;
     when(mockLogerratorAccessor.getLogs(code, method, user)).thenReturn(logResponse);
     String result1 = logAccessService.getLogs(code, method, user).get(0).toString();
     assertEquals("Log result does not match", jpmcLog1.toString(), result1);
@@ -89,7 +89,7 @@ public class LogAccessServiceTest {
 
   @Test
   public void testWithOnlyUser() throws Exception {
-    String code = null, user = null, method = "annstewart";
+    String code = null, method = null, user = "annstewart";
     when(mockLogerratorAccessor.getLogs(code, method, user)).thenReturn(logResponse);
     String result1 = logAccessService.getLogs(code, method, user).get(0).toString();
     assertEquals("Log result does not match", jpmcLog1.toString(), result1);
@@ -97,7 +97,7 @@ public class LogAccessServiceTest {
 
   @Test
   public void testWithOnlyMethod() throws Exception {
-    String code = null, user = "POST", method = null;
+    String code = null, method = "POST", user = null;
 
     when(mockLogerratorAccessor.getLogs(code, method, user)).thenReturn(logResponse);
     String result1 = logAccessService.getLogs(code, method, user).get(0).toString();
@@ -106,7 +106,7 @@ public class LogAccessServiceTest {
 
   @Test(expected = IOException.class)
   public void testException() throws Exception {
-    String code = null, user = "POST", method = null;
+    String code = null, method = "POST", user = null;
     when(mockLogerratorAccessor.getLogs(code, method, user)).thenThrow(IOException.class);
     logAccessService.getLogs(code, method, user);
   }
