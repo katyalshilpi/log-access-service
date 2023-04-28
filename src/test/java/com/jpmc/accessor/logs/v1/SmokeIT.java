@@ -22,17 +22,17 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 /**
  * Smoke test REST APIs
  * 
  * To run this test, run command 
- * mvn -Dtest=com.bluenile.scrabble.SmokeTest test
+ * mvn -Dtest=com.jpmc.accessor.ogs.SmokeIT test
  * 
  * Springboot service needs to be running for this smoke test
- * java -Xmx500m -jar target/scrabble-service.jar
+ * java -Xmx500m -jar target/log-access-service.jar
  */
-@RunWith(SpringRunner.class)
 public class SmokeIT {
     /**
      * Set to {@code true} to throw errors instead of returning responses.
@@ -82,7 +82,7 @@ public class SmokeIT {
         ResponseEntity<String> response = this.restTemplate.getForEntity("/ping", String.class);
 
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(response.getBody()).isEqualToIgnoringCase("pong");
+        assertThat(response.getBody()).isEqualToIgnoringCase("ping successful");
     }
 
     /**
@@ -111,20 +111,9 @@ public class SmokeIT {
      * Test /logs endpoint.
      */
     @Test
-    public void testGetLogs() throws IOException, ServletException {
-        ResponseEntity<String> response = this.restTemplate.getForEntity("/logs", String.class);
+    public void testGetLogs() throws IOException {
+        ResponseEntity response = this.restTemplate.getForEntity("/logs?code=403&method=PUT&user=minus_aut", Object.class);
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(response.getBody().split(",").length == 2).isTrue();
-        
-//        response = this.restTemplate.getForEntity("/words/jj", String.class);
-//        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-//        assertThat(response.getBody().split(",").length == 1).isTrue();
-//
-//        response = this.restTemplate.getForEntity("/words/1sadf", String.class);
-//        assertThat(response.getStatusCode().is4xxClientError()).isTrue();
-//
-//        response = this.restTemplate.getForEntity("/words/asdf_sdf", String.class);
-//        assertThat(response.getStatusCode().is4xxClientError()).isTrue();
     }
 
     /**

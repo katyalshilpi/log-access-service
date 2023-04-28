@@ -1,0 +1,5 @@
+{
+  "projectVersion": "${project.version}",
+  "buildNumber": "${buildno}",
+  "buildDate": "${timestamp}"
+}
