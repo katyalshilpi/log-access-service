@@ -47,7 +47,7 @@ public class LogAccessController {
   public ResponseEntity<StreamingResponseBody> streamLogs(
       @ApiParam(value = "Http Response Code", example = "200, 500") @RequestParam(name = "code", required = false) String code,
       @ApiParam(value = "Http Request Method", example = "GET, POST, PUT") @RequestParam(name = "method", required = false) String method,
-      @ApiParam(value = "Username with which the user has authenticated himself", example = "GET, POST, PUT") @RequestParam(name = "user", required = false) String user) throws Exception {
+      @ApiParam(value = "Username with which the user has authenticated himself", example = "testUser") @RequestParam(name = "user", required = false) String user) throws Exception {
     List<JPMCLog> resultList = logAccessService.getLogs(code, method, user);
     StreamingResponseBody responseBody = response -> {
       for (JPMCLog jpmcLog : resultList) {
