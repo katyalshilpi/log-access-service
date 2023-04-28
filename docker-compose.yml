@@ -1,6 +1,15 @@
 version: '2.0'
+networks:
+  default:
+    external:
+      name: jpmc
 
 services:
+  loggerator:
+    container_name: loggerator
+    image: gcr.io/hiring-278615/loggerator
+    ports:
+      - "8080:8080"
   log-access-service:
     build:
       context: .
@@ -9,6 +18,8 @@ services:
     image: log-access-service
     ports:
       - "18080:18080"
+    links:
+      - loggerator:gcr.io/hiring-278615/loggerator
     entrypoint:
       - java
       - -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=26976

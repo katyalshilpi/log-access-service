@@ -3,7 +3,7 @@
 log-access-service exposes an endpoint /logs which streams the logs back without any blocking requests.
 
 LoggeratorAccessor reads the loggerator properties form the resource file and based on that establishes connection with it. It reads the logs line by line and
-filters them based on the code/method/user request parameters. This is then returned back to the service where the result is sorted by date and returned.
+filters them by based on the code/method/user parameters and sorts them by date descending. This is then returned back to the service and returned.
 
 The controller uses the StreamingResponseBody type for async request processing and content is written directly to the response OutputStream without holding up
 the threads in the servlet container.
