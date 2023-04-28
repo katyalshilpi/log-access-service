@@ -22,6 +22,6 @@ services:
       - loggerator:gcr.io/hiring-278615/loggerator
     entrypoint:
       - java
-      - -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=26976
+      - -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=18080
       - -jar
       - log-access-service.jar

@@ -1,6 +1,6 @@
 loggerator:
   host: localhost
-  count: 800
+  count: 50
   port: 8080
-  seed: 1
+  seed: 3
 
