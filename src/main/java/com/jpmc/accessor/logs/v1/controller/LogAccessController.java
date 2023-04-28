@@ -1,6 +1,7 @@
 package com.jpmc.accessor.logs.v1.controller;
 
 import java.util.List;
+import java.util.Set;
 import javax.ws.rs.Produces;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,18 +52,17 @@ public class LogAccessController {
       @ApiParam(value = "Http Request Method", example = "GET, POST, PUT") @RequestParam(name = "method", required = false) String method,
       @ApiParam(value = "Username with which the user has authenticated himself", example = "testUser") @RequestParam(name = "user", required = false) String user)
       throws Exception {
-    List<JPMCLog> resultList = logAccessService.getLogs(code, method, user);
+    Set<JPMCLog> resultList = logAccessService.getLogs(code, method, user);
     StreamingResponseBody responseBody = response -> {
       for (JPMCLog jpmcLog : resultList) {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonString = mapper.writeValueAsString(jpmcLog) + "\n";
-        response.write(jsonString.getBytes());
-        response.flush();
         try {
-          Thread.sleep(10);
+          ObjectMapper mapper = new ObjectMapper();
+          String jsonString = mapper.writeValueAsString(jpmcLog) + "\n";
+          response.write(jsonString.getBytes());
+          response.flush();
         }
-        catch (InterruptedException e) {
-          log.error("Error streaming logs from loggerator - " + e.getMessage());
+        catch (Exception e) {
+          log.error("Error writing streaming response body - " + e.getMessage());
         }
       }
     };

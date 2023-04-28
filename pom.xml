@@ -47,6 +47,10 @@
 
     <plugins>
       <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.6.1</version>
@@ -219,7 +223,6 @@
       <version>${assertj-version}</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
@@ -227,7 +230,6 @@
       <scope>test</scope>
     </dependency>
     <!-- End test dependencies -->
-
   </dependencies>
 
 </project>

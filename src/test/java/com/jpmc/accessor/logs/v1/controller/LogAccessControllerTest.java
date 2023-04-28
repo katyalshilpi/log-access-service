@@ -5,6 +5,8 @@ import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.jpmc.accessor.logs.v1.model.JPMCLog;
 import com.jpmc.accessor.logs.v1.service.LogAccessService;
@@ -23,7 +25,7 @@ public class LogAccessControllerTest {
 
   private LogAccessController logAccessController;
   private final JPMCLog jpmcLog1 = new JPMCLog("23.59.50.157", "-", "annstewart", "[18/Jul/2000 02:12:31 +0000]", "\"POST /photos/90 HTTP/1.0\"", "200", 97);
-  private final List<JPMCLog> logResponse = new LinkedList<>();
+  private final Set<JPMCLog> logResponse = new TreeSet<>();
 
   @Before
   public void before() {

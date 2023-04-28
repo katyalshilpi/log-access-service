@@ -32,6 +32,16 @@ mvn clean install
 mvn -P unit verify
 ```
 
+### Docker build
+Run the command at the project level
+```
+./bin/image-build.sh 
+```
+### Docker Run
+```
+./bin/image-run.sh 
+```
+
 ### Run the server:
 
 ```

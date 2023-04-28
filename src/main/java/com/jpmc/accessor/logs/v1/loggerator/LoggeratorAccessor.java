@@ -6,6 +6,9 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
@@ -36,13 +39,14 @@ public class LoggeratorAccessor {
   @Value("${loggerator.seed}")
   int seed;
 
-  public List<JPMCLog> getLogs(String code, String method, String user) throws IOException {
+  public Set<JPMCLog> getLogs(String code, String method, String user) throws IOException {
+    long start = System.currentTimeMillis();
     // TODO This list could become a memory bottleneck for huge data, we need to decide how to manage this more efficiently
-    List<JPMCLog> logList = new LinkedList<>();
+    Set<JPMCLog> logList = new TreeSet<>();
 
     // wait for a client to connect
     try (Socket clientSocket = new Socket(host, port)) {
-      log.info("Client connected from " + clientSocket.getInetAddress() + " to loggerator running on port" + port);
+      log.info("Client connected from - " + clientSocket.getInetAddress() + " to loggerator running on port - " + port);
 
       try (BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
         // Append the log line to the logBuilder
@@ -51,9 +55,6 @@ public class LoggeratorAccessor {
           String[] logParts = line.split(" ");
           if (logParts.length == 11) {
             // TODO Parse the log entry to get the log fields based on - https://www.w3.org/Daemon/User/Config/Logging.html
-            // final String regex = "^(\\S+) (\\S+) (\\S+) " +
-            //        "\\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(\\S+)" +
-            //        " (\\S+)\\s*(\\S+)?\\s*\" (\\d{3}) (\\S+)";
             String dateString = logParts[3] + ' ' + logParts[4] + ' ' + logParts[5];
             String request = logParts[6] + ' ' + logParts[7] + ' ' + logParts[8];
 
@@ -74,6 +75,9 @@ public class LoggeratorAccessor {
       log.error("IO Exception thrown while establishing socket connection to loggerator - " + e.getMessage());
       throw e;
     }
+    // TODO Convert to metric
+    long end = System.currentTimeMillis();
+    log.error("Total time taken to fetch filtered logs: " + (end-start)/1000 + "sec");
     return logList;
   }
 

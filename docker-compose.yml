@@ -1,18 +1,14 @@
 version: '2.0'
 
-networks:
-  default:
-    external:
-      name: bluenile
-
 services:
-
   log-access-service:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     container_name: log-access-service
     image: log-access-service
     ports:
-      #      - "8081:8081"
-      - "18080:18080" # debug port
+      - "18080:18080"
     entrypoint:
       - java
       - -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=26976

@@ -3,6 +3,7 @@ package com.jpmc.accessor.logs.v1.logerrator;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 import java.util.List;
+import java.util.Set;
 
 import com.jpmc.accessor.logs.v1.loggerator.LoggeratorAccessor;
 import com.jpmc.accessor.logs.v1.model.JPMCLog;
@@ -26,10 +27,10 @@ public class LoggeratorAccessorTest {
   }
 
   public void assertResults(String code, String method, String user) throws Exception {
-    List<JPMCLog> logList = loggeratorAccessor.getLogs(code, method, user);
+    Set<JPMCLog> logList = loggeratorAccessor.getLogs(code, method, user);
     assertEquals("Result not returned.", (logList != null), true);
     if (logList != null && logList.size() > 0) {
-      JPMCLog log = logList.get(0);
+      JPMCLog log = logList.iterator().next();
       if (!Strings.isNullOrEmpty(code)) {
         assertEquals("Log result Code does not match", code, log.getStatus());
       }

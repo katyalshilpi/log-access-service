@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class JPMCLog {
+public class JPMCLog implements Comparable<JPMCLog> {
 
   // Remote hostname (or IP number if DNS hostname is not available, or if DNSLookup is Off
   private String remoteHost;
@@ -55,6 +55,11 @@ public class JPMCLog {
       log.error("Could not parse date due to error - " + e.getMessage());
     }
     return null;
+  }
+
+  public int compareTo(JPMCLog jpmcLog) {
+    return (jpmcLog != null) ?
+        jpmcLog.getDate().compareTo(this.getDate()) : -1;
   }
 
 }
