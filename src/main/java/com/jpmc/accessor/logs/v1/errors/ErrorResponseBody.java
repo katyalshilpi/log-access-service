@@ -2,11 +2,10 @@ package com.jpmc.accessor.logs.v1.errors;
 
 import javax.ws.rs.core.Response;
 
-import org.springframework.http.HttpStatus;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 
 /**
  * Message structure for standardized error response.
@@ -14,13 +13,15 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @Slf4j
 @AllArgsConstructor
-public class ErrorResponseBody  {
+public class ErrorResponseBody {
+
   private String message;
   private int code;
 
   public ErrorResponseBody(String msg) {
     this.message = msg;
   }
+
   public ErrorResponseBody(Response.Status status, Throwable error) {
     this(status.getReasonPhrase() + " - " + error.getMessage());
     code = status.getStatusCode();
@@ -60,11 +61,14 @@ public class ErrorResponseBody  {
   private void logSomething(Throwable error) {
     if (log.isDebugEnabled()) {
       log.debug(getMessage(), error);
-    } else if (error == null) {
+    }
+    else if (error == null) {
       log.info(getMessage());
-    } else if (code >= 500) {
+    }
+    else if (code >= 500) {
       log.error(getMessage(), error);
-    } else {
+    }
+    else {
       log.info(getMessage());
     }
   }

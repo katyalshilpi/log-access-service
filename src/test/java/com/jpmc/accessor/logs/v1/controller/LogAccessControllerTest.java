@@ -22,8 +22,7 @@ public class LogAccessControllerTest {
   LogAccessService mockLogAccessService;
 
   private LogAccessController logAccessController;
-  private final JPMCLog jpmcLog1 = new JPMCLog("23.59.50.157", "-", "annstewart", "[18/Jul/2000 02:12:31 +0000]",
-                                               "\"POST /photos/90 HTTP/1.0\"", "200", 97);
+  private final JPMCLog jpmcLog1 = new JPMCLog("23.59.50.157", "-", "annstewart", "[18/Jul/2000 02:12:31 +0000]", "\"POST /photos/90 HTTP/1.0\"", "200", 97);
   private final List<JPMCLog> logResponse = new LinkedList<>();
 
   @Before
@@ -35,8 +34,7 @@ public class LogAccessControllerTest {
 
   @Test
   public void testGetLogs() throws Exception {
-    when(mockLogAccessService.getLogs("200", "POST", "annstewart"))
-        .thenReturn(logResponse);
+    when(mockLogAccessService.getLogs("200", "POST", "annstewart")).thenReturn(logResponse);
 
     ResponseEntity<StreamingResponseBody> resp = logAccessController.streamLogs("200", "POST", "annstewart");
     assertTrue("Result null", resp != null && resp.hasBody());

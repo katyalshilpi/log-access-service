@@ -29,8 +29,7 @@ public class JPMCLog {
   // The content-length of the document transferred
   private int bytes;
 
-  public JPMCLog(String remoteHost, String rfc931, String authUser, String dateStr,
-                 String request, String status, int bytes) {
+  public JPMCLog(String remoteHost, String rfc931, String authUser, String dateStr, String request, String status, int bytes) {
     this.remoteHost = remoteHost;
     this.rfc931 = rfc931;
     this.authUser = authUser;
@@ -51,7 +50,8 @@ public class JPMCLog {
       tempDate = tempDate.replace("]", "");
       SimpleDateFormat dt = new SimpleDateFormat("dd/MMM/yyyy hh:mm:ss zzz");
       return dt.parse(tempDate);
-    } catch(Exception e) {
+    }
+    catch (Exception e) {
       log.error("Could not parse date due to error - " + e.getMessage());
     }
     return null;

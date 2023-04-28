@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  *     <li>{@code /ping}</li>
  *     <li>{@code /version}</li>
  * </ul>
- * 
+ * <p>
  * {@code /health} or {@code /ping} is used by load balancer for health check
  * {@code /version} is to check the current version of the service
  */
@@ -31,63 +31,56 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class StandardEndpointsController {
 
-    @VisibleForTesting static final String PING_SUCCESSFUL = "ping successful";
+  @VisibleForTesting
+  static final String PING_SUCCESSFUL = "ping successful";
 
-    private String version = "VERSION UNAVAILABLE. CHECK LOG FOR REASON.";
+  private String version = "VERSION UNAVAILABLE. CHECK LOG FOR REASON.";
 
-    @PostConstruct
-    public void init() {
-        log.info("Initializing...");
+  @PostConstruct
+  public void init() {
+    log.info("Initializing...");
 
-        try {
-            version = getResource("version.json");
-        } catch(Exception e) {
-            log.warn("Cannot read version.json from classpath.", e);
-        }
-
-        log.info("Initialized");
+    try {
+      version = getResource("version.json");
+    }
+    catch (Exception e) {
+      log.warn("Cannot read version.json from classpath.", e);
     }
 
-    @RequestMapping(value="/ping", method=RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "ping service",
-    notes = "Return pong to show that the service is running. <br>" +
-            "Returns HTTP status code 200 and pong if service is running.")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success"),
-            @ApiResponse(code = 401, message = "Not used"),
-            @ApiResponse(code = 403, message = "Not used"),
-            @ApiResponse(code = 404, message = "Not used"),
-            @ApiResponse(code = 503, message = "Service not available")
-    })
-    public String ping() {
-        return PING_SUCCESSFUL;
+    log.info("Initialized");
+  }
+
+  @RequestMapping(value = "/ping", method = RequestMethod.GET)
+  @ResponseStatus(HttpStatus.OK)
+  @ApiOperation(value = "ping service", notes = "Return pong to show that the service is running. <br>" +
+      "Returns HTTP status code 200 and pong if service is running.")
+  @ApiResponses(value = {@ApiResponse(code = 200, message = "Success"), @ApiResponse(code = 401, message = "Not used"),
+                         @ApiResponse(code = 403, message = "Not used"), @ApiResponse(code = 404, message = "Not used"),
+                         @ApiResponse(code = 503, message = "Service not available")})
+  public String ping() {
+    return PING_SUCCESSFUL;
+  }
+
+  @RequestMapping(value = "/version", method = RequestMethod.GET)
+  @ResponseStatus(HttpStatus.OK)
+  @ApiOperation(value = "version of service", notes = "Return version, build number and build time of the running service")
+  @ApiResponses(value = {@ApiResponse(code = 200, message = "Success"), @ApiResponse(code = 401, message = "Not used"),
+                         @ApiResponse(code = 403, message = "Not used"), @ApiResponse(code = 404, message = "Not used"),
+                         @ApiResponse(code = 503, message = "Service not available")})
+  public String getVersion() {
+    return version;
+  }
+
+  private String getResource(String fileName) {
+    String result = null;
+
+    try {
+      result = Resources.toString(Resources.getResource(fileName), Charsets.UTF_8);
+    }
+    catch (Exception e) {
+      log.info("Resource {} not found.", fileName);
     }
 
-    @RequestMapping(value="/version", method= RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "version of service",
-    notes = "Return version, build number and build time of the running service")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success"),
-            @ApiResponse(code = 401, message = "Not used"),
-            @ApiResponse(code = 403, message = "Not used"),
-            @ApiResponse(code = 404, message = "Not used"),
-            @ApiResponse(code = 503, message = "Service not available")
-    })
-    public String getVersion() {
-        return version;
-    }
-
-    private String getResource(String fileName) {
-        String result = null;
-
-        try {
-            result = Resources.toString(Resources.getResource(fileName), Charsets.UTF_8);
-        } catch(Exception e) {
-            log.info("Resource {} not found.", fileName);
-        }
-
-        return result;
-    }
+    return result;
+  }
 }

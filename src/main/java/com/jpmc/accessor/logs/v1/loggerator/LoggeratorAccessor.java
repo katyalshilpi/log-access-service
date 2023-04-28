@@ -50,15 +50,16 @@ public class LoggeratorAccessor {
         while ((line = reader.readLine()) != null) {
           String[] logParts = line.split(" ");
           if (logParts.length == 11) {
-            // TODO Change to parse it better
+            // TODO Parse the log entry to get the log fields based on - https://www.w3.org/Daemon/User/Config/Logging.html
+            // final String regex = "^(\\S+) (\\S+) (\\S+) " +
+            //        "\\[([\\w:/]+\\s[+\\-]\\d{4})\\] \"(\\S+)" +
+            //        " (\\S+)\\s*(\\S+)?\\s*\" (\\d{3}) (\\S+)";
             String dateString = logParts[3] + ' ' + logParts[4] + ' ' + logParts[5];
             String request = logParts[6] + ' ' + logParts[7] + ' ' + logParts[8];
 
             JPMCLog jpmcLog = new JPMCLog(logParts[0], logParts[1], logParts[2], dateString, request, logParts[9], Integer.parseInt(logParts[10]));
 
-            if (codeExists(code, jpmcLog.getStatus()) &&
-                userExists(user, jpmcLog.getAuthUser()) &&
-                  methodExists(method, jpmcLog.getRequest())) {
+            if (codeExists(code, jpmcLog.getStatus()) && userExists(user, jpmcLog.getAuthUser()) && methodExists(method, jpmcLog.getRequest())) {
               logList.add(jpmcLog);
             }
           }

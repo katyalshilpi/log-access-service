@@ -1,4 +1,3 @@
-
 loggerator:
   host: localhost
   count: 800000

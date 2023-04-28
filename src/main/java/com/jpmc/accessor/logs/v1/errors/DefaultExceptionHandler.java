@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * A default exception handler for services.
- * It is intended to reduce boiler plate code in services
- * for common behavior.
+ * A default exception handler for services. It is intended to reduce boiler plate code in services for common behavior.
  */
 @ControllerAdvice
 public class DefaultExceptionHandler {

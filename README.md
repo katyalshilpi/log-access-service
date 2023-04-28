@@ -1,46 +1,61 @@
 # log-access-service
+
 log-access-service exposes an endpoint /logs which streams the logs back without any blocking requests.
 
-LoggeratorAccessor reads the loggerator properties form the resource file and based on that establishes 
-connection with it. It reads the logs line by line and filters them based on the code/method/user request
-parameters. This is then returned back to the service where the  result is sorted by date and returned.
+LoggeratorAccessor reads the loggerator properties form the resource file and based on that establishes connection with it. It reads the logs line by line and
+filters them based on the code/method/user request parameters. This is then returned back to the service where the result is sorted by date and returned.
 
-The controller uses the StreamingResponseBody type for async request processing and content is written 
-directly to the response OutputStream without holding up the threads in the servlet container.
+The controller uses the StreamingResponseBody type for async request processing and content is written directly to the response OutputStream without holding up
+the threads in the servlet container.
 
-The current memory bottleneck could be the list that stores the filtered log objects. We need to improve 
-this by paginating or applying other strategies to hold specific amount of data in memory, return that back 
-and repeat the proces again.
+The current memory bottleneck could be the list that stores the filtered log objects. We need to improve this by paginating or applying other strategies to hold
+specific amount of data in memory, return that back and repeat the process again.
 
 The loggerator runs on port 8080 and the log-access-service runs on port 18080.
 
-###To run unit tests:
+### Simplifying Assumptions
 
+The current implementation assumes that there will be a single value passed in the request parameters and it currently does not support comma-separated multiple
+parameter values
+
+### Prerequisites
+
+Developer has Java 11, Apache Maven 3.3.x, docker installed on machine
+
+### Build and package:
+```
+mvn clean install
+```
+
+### Run unit tests:
 ```
 mvn -P unit verify
 ```
 
-###To run integration test:
-
-First run the service
-```
-java -Xmx500m -jar target/log-access-service.jar
-```
-then run the SmokeIT.java test file
-
-###To run the server:
+### Run the server:
 
 ```
 mvn clean install
 mvn spring-boot:run
 ```
+or
+```
+java -Xmx500m -jar target/log-access-service.jar
+```
 
-###To run the API in browser:
+### Run integration test:
+Run the SmokeIT.java test file
+
+### Run the API in browser:
 ```
 http://localhost:18080/logs?code=200&method=GET&user=aut
 ```
+### Run the API in terminal:
+```
+curl localhost:18080/logs?code=200&method=GET&user=aut
+```
 
-###To check the swagger documentation:
+### Swagger documentation ui in browser:
 ```
 http://localhost:18080/swagger-ui/
 ```
@@ -52,6 +67,7 @@ The logs we ask you to consume in this challenge are sent from `loggerator` and 
 For reference, check out this link https://www.w3.org/Daemon/User/Config/Logging.html.
 
 Here is an example of what output may look like:
+
 ```bash
 143.133.122.190 - shawncarr [02/Jul/2000 07:01:19 +0000] "PUT /bookmarks/281 HTTP/1.0" 403 494
 23.59.50.157 - annstewart [09/Jul/2000 04:56:38 +0000] "GET /followers/178 HTTP/1.0" 200 505
@@ -70,6 +86,7 @@ Here is an example of what output may look like:
 39.106.148.70 - randybishop [11/Jul/2000 06:29:40 +0000] "GET /posts/174 HTTP/1.0" 200 552
 37.225.86.209 - pbanks [28/Jul/2000 09:29:02 +0000] "PUT /bookmarks/8 HTTP/1.0" 403 86
 ```
+
 ### The Configuration
 
 During development, it is possible (and likely a good idea) to change the behavior of the `loggerator`. You can do this by using flags:
@@ -87,10 +104,11 @@ For example, `$ docker run -p 8080:8080 gcr.io/hiring-278615/loggerator --count 
 We ask that you write a program (or programs), in any programming language, capable of the following:
 
 - must connect to `loggerator`; receive logs sent over the connection
-- must have HTTP REST endpoint called `/logs` that allows a user to search logs sent over from `loggerator`; this endpoint must support the following query parameters and return a filtered subset of logs received
-    - `code`, e.g. (`code=503`)
-    - `method`, e.g. (`method=GET`)
-    - `user`, e.g. (`user=randybishop`)
+- must have HTTP REST endpoint called `/logs` that allows a user to search logs sent over from `loggerator`; this endpoint must support the following query
+  parameters and return a filtered subset of logs received
+  - `code`, e.g. (`code=503`)
+  - `method`, e.g. (`method=GET`)
+  - `user`, e.g. (`user=randybishop`)
 - must return logs in descending order by date, when any permutation of `/logs` is requested
 
 For example, assume the logs your program receive are the ones above (from the section **The Logs**). Let's imagine a user chooses to `curl` your program.
@@ -99,8 +117,8 @@ For example, assume the logs your program receive are the ones above (from the s
 
 ```json
 [
-	"23.59.50.157 - annstewart [18/Jul/2000 02:12:31 +0000] \"POST /photos/90 HTTP/1.0\" 500 97"
-	"23.59.50.157 - annstewart [08/Jul/2000 08:08:53 +0000] \"POST /bookmarks/123 HTTP/1.0\" 200 562",
+  "23.59.50.157 - annstewart [18/Jul/2000 02:12:31 +0000] \"POST /photos/90 HTTP/1.0\" 500 97"
+  "23.59.50.157 - annstewart [08/Jul/2000 08:08:53 +0000] \"POST /bookmarks/123 HTTP/1.0\" 200 562"
 ]
 ```
 
@@ -108,21 +126,25 @@ For example, assume the logs your program receive are the ones above (from the s
 
 ### Your Solution
 
-We are expecting that you send us the source code of a fully implemented solution for the proposed challenge **using the default configurations** of `loggerator`.
+We are expecting that you send us the source code of a fully implemented solution for the proposed challenge **using the default configurations**
+of `loggerator`.
 
 Your code should build and run on a Mac (or GNU/Linux machine) running a recent OS. **Containerized solutions are mandatory** and should be runnable via Docker.
 
-Third party libraries are permitted; however, as our intent is to come to understand your design choices, we ask for a short description of your rationale of your choices.
+Third party libraries are permitted; however, as our intent is to come to understand your design choices, we ask for a short description of your rationale of
+your choices.
 
 ### Before submitting your code
 
 **IMPORTANT**: To help keep code reviews anonymous, please be sure to remove any sensitive information about yourself from your deliverable.
 
-**We expect you to make sure that your solution works with `loggerator` before sending it to us**. In order to test that your implementation works, be sure you have the server you've written running and listening to port 8080, then run:
+**We expect you to make sure that your solution works with `loggerator` before sending it to us**. In order to test that your implementation works, be sure you
+have the server you've written running and listening to port 8080, then run:
 
 ```
 $ docker run -p 8080:8080 gcr.io/hiring-278615/loggerator --count 10
 ```
+
 This will start the process and begin listening for connections on which to send logs. Once all logs have been sent, the connection will be closed.
 
 ```bash
@@ -132,7 +154,8 @@ This will start the process and begin listening for connections on which to send
 
 ### Acceptance Criteria
 
-We expect you to write **code you would consider production-ready**. This can mean a variety of things, but most importantly we look for code to be well-factored, follow good practices and be tested.
+We expect you to write **code you would consider production-ready**. This can mean a variety of things, but most importantly we look for code to be
+well-factored, follow good practices and be tested.
 
 What we will look for:
 
