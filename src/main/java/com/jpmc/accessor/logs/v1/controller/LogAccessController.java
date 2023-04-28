@@ -2,10 +2,13 @@ package com.jpmc.accessor.logs.v1.controller;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.ws.rs.Produces;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jpmc.accessor.logs.v1.model.JPMCLog;
+
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.jpmc.accessor.logs.v1.model.LogEntry;
 import com.jpmc.accessor.logs.v1.service.LogAccessService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -52,18 +55,19 @@ public class LogAccessController {
       @ApiParam(value = "Http Request Method", example = "GET, POST, PUT") @RequestParam(name = "method", required = false) String method,
       @ApiParam(value = "Username with which the user has authenticated himself", example = "testUser") @RequestParam(name = "user", required = false) String user)
       throws Exception {
-    Set<JPMCLog> resultList = logAccessService.getLogs(code, method, user);
+    Set<LogEntry> resultList = logAccessService.getLogs(code, method, user);
+    List<String> stringList = resultList.stream().map(LogEntry::toString).collect(Collectors.toList());
+
     StreamingResponseBody responseBody = response -> {
-      for (JPMCLog jpmcLog : resultList) {
-        try {
-          ObjectMapper mapper = new ObjectMapper();
-          String jsonString = mapper.writeValueAsString(jpmcLog) + "\n";
-          response.write(jsonString.getBytes());
-          response.flush();
-        }
-        catch (Exception e) {
-          log.error("Error writing streaming response body - " + e.getMessage());
-        }
+      try {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(stringList);
+        response.write(json.getBytes());
+        response.flush();
+      }
+      catch (Exception e) {
+        log.error("Error writing streaming response body - " + e.getMessage());
       }
     };
 

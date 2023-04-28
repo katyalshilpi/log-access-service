@@ -1,8 +1,4 @@
 version: '2.0'
-networks:
-  default:
-    external:
-      name: jpmc
 
 services:
   loggerator:
@@ -10,6 +6,7 @@ services:
     image: gcr.io/hiring-278615/loggerator
     ports:
       - "8080:8080"
+    command:  --count 500 --seed 10 # If this is not set then it will take the default value of count = 800000 and seed = 1
   log-access-service:
     build:
       context: .
@@ -17,11 +14,12 @@ services:
     container_name: log-access-service
     image: log-access-service
     ports:
+      - "26976:26976"
       - "18080:18080"
     links:
-      - loggerator:gcr.io/hiring-278615/loggerator
+      - loggerator:loggerator
     entrypoint:
       - java
-      - -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=18080
+      - -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=26976
       - -jar
       - log-access-service.jar

@@ -3,12 +3,10 @@ package com.jpmc.accessor.logs.v1.controller;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.jpmc.accessor.logs.v1.model.JPMCLog;
+import com.jpmc.accessor.logs.v1.model.LogEntry;
 import com.jpmc.accessor.logs.v1.service.LogAccessService;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,14 +22,14 @@ public class LogAccessControllerTest {
   LogAccessService mockLogAccessService;
 
   private LogAccessController logAccessController;
-  private final JPMCLog jpmcLog1 = new JPMCLog("23.59.50.157", "-", "annstewart", "[18/Jul/2000 02:12:31 +0000]", "\"POST /photos/90 HTTP/1.0\"", "200", 97);
-  private final Set<JPMCLog> logResponse = new TreeSet<>();
+  private final LogEntry logEntry1 = new LogEntry("23.59.50.157", "-", "annstewart", "[18/Jul/2000 02:12:31 +0000]", "\"POST /photos/90 HTTP/1.0\"", "200", "97");
+  private final Set<LogEntry> logResponse = new TreeSet<>();
 
   @Before
   public void before() {
     MockitoAnnotations.initMocks(this);
     logAccessController = new LogAccessController(mockLogAccessService);
-    logResponse.add(jpmcLog1);
+    logResponse.add(logEntry1);
   }
 
   @Test

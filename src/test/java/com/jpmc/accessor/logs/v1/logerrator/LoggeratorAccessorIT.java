@@ -2,17 +2,16 @@ package com.jpmc.accessor.logs.v1.logerrator;
 
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 
-import java.util.List;
 import java.util.Set;
 
 import com.jpmc.accessor.logs.v1.loggerator.LoggeratorAccessor;
-import com.jpmc.accessor.logs.v1.model.JPMCLog;
+import com.jpmc.accessor.logs.v1.model.LogEntry;
 import org.assertj.core.util.Strings;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
-public class LoggeratorAccessorTest {
+public class LoggeratorAccessorIT {
 
   LoggeratorAccessor loggeratorAccessor;
 
@@ -22,15 +21,13 @@ public class LoggeratorAccessorTest {
     loggeratorAccessor = new LoggeratorAccessor();
     loggeratorAccessor.setHost("localhost");
     loggeratorAccessor.setPort(8080);
-    loggeratorAccessor.setCount(10);
-    loggeratorAccessor.setSeed(3);
   }
 
   public void assertResults(String code, String method, String user) throws Exception {
-    Set<JPMCLog> logList = loggeratorAccessor.getLogs(code, method, user);
+    Set<LogEntry> logList = loggeratorAccessor.getLogs(code, method, user);
     assertEquals("Result not returned.", (logList != null), true);
     if (logList != null && logList.size() > 0) {
-      JPMCLog log = logList.iterator().next();
+      LogEntry log = logList.iterator().next();
       if (!Strings.isNullOrEmpty(code)) {
         assertEquals("Log result Code does not match", code, log.getStatus());
       }

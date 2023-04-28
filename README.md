@@ -32,43 +32,51 @@ mvn clean install
 mvn -P unit verify
 ```
 
-### Docker build
-Run the command at the project level
+### Run vis Docker
+* To construct the Docker image, run in terminal
 ```
-./bin/image-build.sh 
+./bin/image-build.sh
 ```
-### Docker Run
+* To start Docker image, run in terminal
 ```
 ./bin/image-run.sh 
 ```
+* To check that the service ia running, run in terminal
+```
+curl http://localhost:8080/ping to check if service is running.
+```
 
-### Run the server:
-
+### Run via Java
 ```
-mvn clean install
-mvn spring-boot:run
-```
-or
-```
-java -Xmx500m -jar target/log-access-service.jar
+java -Xmx500m -Dspring.profiles.active=dev -jar target/log-access-service.jar
 ```
 
 ### Run integration test:
-Run the SmokeIT.java test file
+Run the loggerator and the service 
+Run the SmokeIT Test 
+Run the LoggeratorIT 
 
 ### Run the API in browser:
 ```
 http://localhost:18080/logs?code=200&method=GET&user=aut
 ```
-### Run the API in terminal:
+
+### Check standard operational endpoints
+* To check if service is running, run in terminal
 ```
-curl localhost:18080/logs?code=200&method=GET&user=aut
+curl http://localhost:8080/ping
+```
+* To check for service version
+```
+curl http://localhost:8080/version
 ```
 
-### Swagger documentation ui in browser:
+### Swagger API documentation ui in browser:
 ```
 http://localhost:18080/swagger-ui/
 ```
+
+### Project Details
 
 ### The Logs
 

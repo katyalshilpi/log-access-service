@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class JPMCLog implements Comparable<JPMCLog> {
+public class LogEntry implements Comparable<LogEntry> {
 
   // Remote hostname (or IP number if DNS hostname is not available, or if DNSLookup is Off
   private String remoteHost;
@@ -27,9 +27,10 @@ public class JPMCLog implements Comparable<JPMCLog> {
   // The HTTP status code returned to the client
   private String status;
   // The content-length of the document transferred
-  private int bytes;
+  private String bytes;
 
-  public JPMCLog(String remoteHost, String rfc931, String authUser, String dateStr, String request, String status, int bytes) {
+  public LogEntry(String remoteHost, String rfc931, String authUser,
+                  String dateStr, String request, String status, String bytes) {
     this.remoteHost = remoteHost;
     this.rfc931 = rfc931;
     this.authUser = authUser;
@@ -57,9 +58,9 @@ public class JPMCLog implements Comparable<JPMCLog> {
     return null;
   }
 
-  public int compareTo(JPMCLog jpmcLog) {
-    return (jpmcLog != null) ?
-        jpmcLog.getDate().compareTo(this.getDate()) : -1;
+  public int compareTo(LogEntry logEntry) {
+    return (logEntry != null) ?
+        logEntry.getDate().compareTo(this.getDate()) : -1;
   }
 
 }

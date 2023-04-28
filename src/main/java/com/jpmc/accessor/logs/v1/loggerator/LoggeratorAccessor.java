@@ -4,15 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
-import com.jpmc.accessor.logs.v1.model.JPMCLog;
+import com.jpmc.accessor.logs.v1.model.LogEntry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -25,24 +23,20 @@ import org.springframework.stereotype.Component;
 @Getter
 public class LoggeratorAccessor {
 
-  @VisibleForTesting
+  // Regex for log entry fields
+  // IP Address ^(\d.+)  rfc931 (\w+)  DateTime (\[\d+\/\w+\/\d+ \d+\:\d+\:\d+ [+-]\d{4}\])   Request ("(.+?)")  Status (\d{3})   Bytes (\d+)
+  private static final String LOG_ENTRY_PATTERN = "^(\\d.+) (\\S+) (\\S+) (\\[\\d+\\/\\w+\\/\\d+ \\d+\\:\\d+\\:\\d+ [+-]\\d{4}\\]) (\".+?\") (\\d{3}) (\\d+)";
+  private static final Pattern PATTERN = Pattern.compile(LOG_ENTRY_PATTERN);
   @Value("${loggerator.host}")
-  String host;
-
-  @VisibleForTesting
-  @Value("${loggerator.count}")
-  int count;
+  private String host;
 
   @Value("${loggerator.port}")
-  int port;
+  private int port;
 
-  @Value("${loggerator.seed}")
-  int seed;
-
-  public Set<JPMCLog> getLogs(String code, String method, String user) throws IOException {
+  public Set<LogEntry> getLogs(String code, String method, String user) throws IOException {
     long start = System.currentTimeMillis();
     // TODO This list could become a memory bottleneck for huge data, we need to decide how to manage this more efficiently
-    Set<JPMCLog> logList = new TreeSet<>();
+    Set<LogEntry> logList = new TreeSet<>();
 
     // wait for a client to connect
     try (Socket clientSocket = new Socket(host, port)) {
@@ -52,18 +46,25 @@ public class LoggeratorAccessor {
         // Append the log line to the logBuilder
         String line;
         while ((line = reader.readLine()) != null) {
-          String[] logParts = line.split(" ");
-          if (logParts.length == 11) {
-            // TODO Parse the log entry to get the log fields based on - https://www.w3.org/Daemon/User/Config/Logging.html
-            String dateString = logParts[3] + ' ' + logParts[4] + ' ' + logParts[5];
-            String request = logParts[6] + ' ' + logParts[7] + ' ' + logParts[8];
+          Matcher matcher = PATTERN.matcher(line);
+          if (matcher.matches()) {
+            String remoteHost = matcher.group(1);
+            String rfc931 = matcher.group(2);
+            String authUser = matcher.group(3);
+            String dateStr = matcher.group(4);
+            String request = matcher.group(5);
+            String status = matcher.group(6);
+            String bytes = matcher.group(7);
 
-            JPMCLog jpmcLog = new JPMCLog(logParts[0], logParts[1], logParts[2], dateString, request, logParts[9], Integer.parseInt(logParts[10]));
-
-            if (codeExists(code, jpmcLog.getStatus()) && userExists(user, jpmcLog.getAuthUser()) && methodExists(method, jpmcLog.getRequest())) {
-              logList.add(jpmcLog);
+            LogEntry logEntry = new LogEntry(remoteHost,rfc931, authUser, dateStr, request, status, bytes);
+            if (codeExists(code, logEntry.getStatus()) && userExists(user, logEntry.getAuthUser()) && methodExists(method, logEntry.getRequest())) {
+              logList.add(logEntry);
             }
           }
+          else {
+            log.warn("Invalid log entry format - matcher could not match with the log entry.");
+          }
+
         }
       }
       catch (IOException e) {
@@ -77,7 +78,7 @@ public class LoggeratorAccessor {
     }
     // TODO Convert to metric
     long end = System.currentTimeMillis();
-    log.error("Total time taken to fetch filtered logs: " + (end-start)/1000 + "sec");
+    log.info("Total time taken to fetch filtered logs: " + (end - start) / 1000 + "sec");
     return logList;
   }
 

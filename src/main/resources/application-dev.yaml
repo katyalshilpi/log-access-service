@@ -1,0 +1,5 @@
+# Use this profile for developer local testing
+loggerator:
+  host: localhost
+  port: 8080
+

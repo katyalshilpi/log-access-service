@@ -10,8 +10,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.jpmc.accessor.logs.v1.loggerator.LoggeratorAccessor;
-import com.jpmc.accessor.logs.v1.model.JPMCLog;
-import com.sun.source.tree.Tree;
+import com.jpmc.accessor.logs.v1.model.LogEntry;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -24,21 +23,21 @@ public class LogAccessServiceTest {
 
   private LogAccessService logAccessService;
 
-  private final JPMCLog jpmcLog1 = new JPMCLog("23.59.50.157", "-", "annstewart", "[18/Jul/2000 02:12:31 +0000]", "\"POST /photos/90 HTTP/1.0\"", "200", 97);
-  private final JPMCLog jpmcLog2 = new JPMCLog("23.59.50.157", "-", "annstewart", "[18/Jul/2000 02:12:31 +0000]", "\"POST /photos/90 HTTP/1.0\"", "500", 97);
-  private final Set<JPMCLog> logResponse = new TreeSet<>();
+  private final LogEntry logEntry1 = new LogEntry("23.59.50.157", "-", "annstewart", "[18/Jul/2000 02:12:31 +0000]", "\"POST /photos/90 HTTP/1.0\"", "200", "97");
+  private final LogEntry logEntry2 = new LogEntry("23.59.50.157", "-", "annstewart", "[18/Jul/2000 02:12:31 +0000]", "\"POST /photos/90 HTTP/1.0\"", "500", "97");
+  private final Set<LogEntry> logResponse = new TreeSet<>();
 
   @Before
   public void before() {
     MockitoAnnotations.initMocks(this);
     logAccessService = new LogAccessService(mockLogerratorAccessor);
-    logResponse.add(jpmcLog1);
-    logResponse.add(jpmcLog2);
+    logResponse.add(logEntry1);
+    logResponse.add(logEntry2);
   }
 
   public void assertResult(String code, String method, String user) throws Exception {
     String result1 = logAccessService.getLogs(code, method, user).iterator().next().toString();
-    assertEquals("Log result does not match", jpmcLog1.toString(), result1);
+    assertEquals("Log result does not match", logEntry1.toString(), result1);
   }
 
   @Test
@@ -65,17 +64,17 @@ public class LogAccessServiceTest {
   @Test
   public void testWithCodeMethod() throws Exception {
     String code = "500", method = "POST", user = null;
-    Set<JPMCLog> list = new TreeSet<>();
-    list.add(jpmcLog2);
+    Set<LogEntry> list = new TreeSet<>();
+    list.add(logEntry2);
     when(mockLogerratorAccessor.getLogs(code, method, user)).thenReturn(list);
     String result1 = logAccessService.getLogs(code, method, user).iterator().next().toString();
-    assertEquals("Log result does not match", jpmcLog2.toString(), result1);
+    assertEquals("Log result does not match", logEntry2.toString(), result1);
   }
 
   @Test
   public void testWithCodeUser() throws Exception {
     String code = "200", method = null, user = "annstewart";
-    List<JPMCLog> list = new LinkedList<>();
+    List<LogEntry> list = new LinkedList<>();
     when(mockLogerratorAccessor.getLogs(code, method, user)).thenReturn(logResponse);
     assertResult(code, method, user);
   }
