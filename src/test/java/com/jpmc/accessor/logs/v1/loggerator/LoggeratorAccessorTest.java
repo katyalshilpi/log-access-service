@@ -10,9 +10,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
-public class LoggeratorAccessorIT {
+public class LoggeratorAccessorTest {
 
-  private LoggeratorAccessor loggeratorAccessor;
+  LoggeratorAccessor loggeratorAccessor;
 
   @Before
   public void before() {

@@ -27,11 +27,12 @@ public class LoggeratorAccessor {
   // IP Address ^(\d.+)  rfc931 (\w+)  DateTime (\[\d+\/\w+\/\d+ \d+\:\d+\:\d+ [+-]\d{4}\])   Request ("(.+?)")  Status (\d{3})   Bytes (\d+)
   private static final String LOG_ENTRY_PATTERN = "^(\\d.+) (\\S+) (\\S+) (\\[\\d+\\/\\w+\\/\\d+ \\d+\\:\\d+\\:\\d+ [+-]\\d{4}\\]) (\".+?\") (\\d{3}) (\\d+)";
   private static final Pattern PATTERN = Pattern.compile(LOG_ENTRY_PATTERN);
+
   @Value("${loggerator.host}")
-  private String host;
+  String host;
 
   @Value("${loggerator.port}")
-  private int port;
+  int port;
 
   public Set<LogEntry> getLogs(String code, String method, String user) throws IOException {
     long start = System.currentTimeMillis();
@@ -56,7 +57,7 @@ public class LoggeratorAccessor {
             String status = matcher.group(6);
             String bytes = matcher.group(7);
 
-            LogEntry logEntry = new LogEntry(remoteHost,rfc931, authUser, dateStr, request, status, bytes);
+            LogEntry logEntry = new LogEntry(remoteHost, rfc931, authUser, dateStr, request, status, bytes);
             if (codeExists(code, logEntry.getStatus()) && userExists(user, logEntry.getAuthUser()) && methodExists(method, logEntry.getRequest())) {
               logList.add(logEntry);
             }
