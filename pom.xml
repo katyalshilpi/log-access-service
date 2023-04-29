@@ -34,6 +34,7 @@
     <mockito-core-version>3.9.0</mockito-core-version>
     <assertj-version>3.16.1</assertj-version>
     <json-path-version>2.4.0</json-path-version>
+    <javax-rs-version>2.1</javax-rs-version>
   </properties>
 
   <build>
@@ -113,7 +114,7 @@
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>javax.ws.rs-api</artifactId>
-      <version>2.1</version>
+      <version>${javax-rs-version}</version>
     </dependency>
 
     <!-- Spring Boot -->

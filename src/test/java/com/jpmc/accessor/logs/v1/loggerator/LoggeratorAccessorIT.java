@@ -1,10 +1,9 @@
-package com.jpmc.accessor.logs.v1.logerrator;
+package com.jpmc.accessor.logs.v1.loggerator;
 
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 import java.util.Set;
 
-import com.jpmc.accessor.logs.v1.loggerator.LoggeratorAccessor;
 import com.jpmc.accessor.logs.v1.model.LogEntry;
 import org.assertj.core.util.Strings;
 import org.junit.Before;
@@ -13,7 +12,7 @@ import org.mockito.MockitoAnnotations;
 
 public class LoggeratorAccessorIT {
 
-  LoggeratorAccessor loggeratorAccessor;
+  private LoggeratorAccessor loggeratorAccessor;
 
   @Before
   public void before() {
