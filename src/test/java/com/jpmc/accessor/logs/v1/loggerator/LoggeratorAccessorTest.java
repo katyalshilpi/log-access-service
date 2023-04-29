@@ -1,8 +1,11 @@
 package com.jpmc.accessor.logs.v1.loggerator;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.jpmc.accessor.logs.v1.model.LogEntry;
 import org.assertj.core.util.Strings;
@@ -37,6 +40,11 @@ public class LoggeratorAccessorTest {
         assertEquals("Log result Method does not match", log.getRequest().toUpperCase().startsWith("\"" + method.toUpperCase()), true);
       }
     }
+  }
+
+  public void assertEmptyResult(String code, String method, String user) throws Exception {
+    Set<LogEntry> result1 = loggeratorAccessor.getLogs(code, method, user);
+    assertTrue("Empty list not returned for multiple values", (result1 != null && result1.size() == 0));
   }
 
   @Test
@@ -76,15 +84,39 @@ public class LoggeratorAccessorTest {
   }
 
   @Test
+  public void testWithCommaSeparatedCode() throws Exception {
+    String code = "200,400", method = null, user = null;
+    assertEmptyResult(code, method, user);
+  }
+
+  @Test
   public void testWithOnlyUser() throws Exception {
     String code = null, user = null, method = "annstewart";
     assertResults(code, method, user);
   }
 
   @Test
+  public void testWithCommaSeparatedUser() throws Exception {
+    String code = null, method = null, user = "annstewart,aut";
+    assertEmptyResult(code, method, user);
+  }
+
+  @Test
+  public void testWithSpaceInUser() throws Exception {
+    String code = null, method = null, user = "ann stewart";
+    assertEmptyResult(code, method, user);
+  }
+
+  @Test
   public void testWithOnlyMethod() throws Exception {
     String code = null, user = "POST", method = null;
     assertResults(code, method, user);
+  }
+
+  @Test
+  public void testWithCommaSeparatedMethod() throws Exception {
+    String code = null, method = "POST,GET", user = null;
+    assertEmptyResult(code, method, user);
   }
 
 }

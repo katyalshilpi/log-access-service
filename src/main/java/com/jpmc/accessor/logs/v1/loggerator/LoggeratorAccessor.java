@@ -29,12 +29,12 @@ public class LoggeratorAccessor {
   private static final Pattern PATTERN = Pattern.compile(LOG_ENTRY_PATTERN);
 
   @Value("${loggerator.host}")
-  String host;
+  private String host;
 
   @Value("${loggerator.port}")
-  int port;
+  private int port;
 
-  public Set<LogEntry> getLogs(String code, String method, String user) throws IOException {
+  public Set<LogEntry> getLogs(String code, String method, String user) throws Exception {
     long start = System.currentTimeMillis();
     // TODO This list could become a memory bottleneck for huge data, we need to decide how to manage this more efficiently
     Set<LogEntry> logList = new TreeSet<>();
@@ -57,19 +57,19 @@ public class LoggeratorAccessor {
             String status = matcher.group(6);
             String bytes = matcher.group(7);
 
-            LogEntry logEntry = new LogEntry(remoteHost, rfc931, authUser, dateStr, request, status, bytes);
-            if (codeExists(code, logEntry.getStatus()) && userExists(user, logEntry.getAuthUser()) && methodExists(method, logEntry.getRequest())) {
+            if (containsCode(code, status) && containsUser(user, authUser) && containsMethod(method, request)) {
+              LogEntry logEntry = new LogEntry(remoteHost, rfc931, authUser, dateStr, request, status, bytes);
               logList.add(logEntry);
             }
           }
           else {
-            log.warn("Invalid log entry format - matcher could not match with the log entry.");
+            log.warn("Invalid log entry format - matcher could not match with the log entry - " + line);
           }
 
         }
       }
       catch (IOException e) {
-        log.error("IO Exception thrown while reading from loggerator - " + e.getMessage());
+        log.error("Exception thrown while reading from loggerator - " + e.getMessage());
         throw e;
       }
     }
@@ -83,16 +83,16 @@ public class LoggeratorAccessor {
     return logList;
   }
 
-  private boolean codeExists(String code, String logStatus) {
-    return Strings.isNullOrEmpty(code) || logStatus.equals(code);
+  private boolean containsCode(String code, String logStatus) {
+    return Strings.isNullOrEmpty(code) || code.equals(logStatus);
   }
 
-  private boolean userExists(String user, String logAuthUser) {
-    return Strings.isNullOrEmpty(user) || logAuthUser.equals(user);
+  private boolean containsUser(String user, String logAuthUser) {
+    return Strings.isNullOrEmpty(user) || user.equals(logAuthUser);
   }
 
-  private boolean methodExists(String method, String logRequest) {
-    return Strings.isNullOrEmpty(method) || logRequest.toUpperCase().startsWith("\"" + method.toUpperCase());
+  private boolean containsMethod(String method, String logRequest) {
+    return Strings.isNullOrEmpty(method) || method.startsWith("\"" + logRequest);
   }
 
 }

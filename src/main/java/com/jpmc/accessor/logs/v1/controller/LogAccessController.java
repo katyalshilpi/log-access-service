@@ -46,14 +46,14 @@ public class LogAccessController {
   @ApiOperation(value = "Streams logs from loggerator", notes = "Establishing socket connection with the loggerator and streams the logs back. <br>" +
       "The list will be sorted by the date in descending order <br>" + "If no log entries are returned by the logerator then empty list is returned. " +
       "The current implementation assumes that there will be single value passed in the request parameters and it will not support comma-separated " +
-      "multiple parameter values <br><br>")
+      "multiple parameter values. If comma-separated values are passed then it will return an empty list. <br><br>")
   @ApiResponses(value = {@ApiResponse(code = 200, message = "Success"), @ApiResponse(code = 401, message = "Not used"),
                          @ApiResponse(code = 403, message = "Not used"), @ApiResponse(code = 404, message = "Not used"),
                          @ApiResponse(code = 500, message = "Server error")})
   public ResponseEntity<StreamingResponseBody> streamLogs(
-      @ApiParam(value = "Http Response Code", example = "200, 500") @RequestParam(name = "code", required = false) String code,
-      @ApiParam(value = "Http Request Method", example = "GET, POST, PUT") @RequestParam(name = "method", required = false) String method,
-      @ApiParam(value = "Username with which the user has authenticated himself", example = "testUser") @RequestParam(name = "user", required = false) String user)
+      @ApiParam(value = "Http Response Code", example = "200, 500") @RequestParam(name = "code", required = false) final String code,
+      @ApiParam(value = "Http Request Method", example = "GET, POST, PUT") @RequestParam(name = "method", required = false) final String method,
+      @ApiParam(value = "Username with which the user has authenticated himself", example = "testUser") @RequestParam(name = "user", required = false) final String user)
       throws Exception {
     Set<LogEntry> resultList = logAccessService.getLogs(code, method, user);
     List<String> stringList = resultList.stream().map(LogEntry::toString).collect(Collectors.toList());

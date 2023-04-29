@@ -2,6 +2,7 @@ package com.jpmc.accessor.logs.v1.service;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -38,6 +39,11 @@ public class LogAccessServiceTest {
   public void assertResult(String code, String method, String user) throws Exception {
     String result1 = logAccessService.getLogs(code, method, user).iterator().next().toString();
     assertEquals("Log result does not match", logEntry1.toString(), result1);
+  }
+
+  public void assertEmptyResult(String code, String method, String user) throws Exception {
+    Set<LogEntry> result1 = logAccessService.getLogs(code, method, user);
+    assertTrue("Empty list not returned for multiple values", (result1 != null && result1.size() == 0));
   }
 
   @Test
@@ -87,6 +93,13 @@ public class LogAccessServiceTest {
   }
 
   @Test
+  public void testWithCommaSeparatedCode() throws Exception {
+    String code = "200,400", method = null, user = null;
+    when(mockLogerratorAccessor.getLogs(code, method, user)).thenReturn(new TreeSet<>());
+    assertEmptyResult(code, method, user);
+  }
+
+  @Test
   public void testWithOnlyUser() throws Exception {
     String code = null, method = null, user = "annstewart";
     when(mockLogerratorAccessor.getLogs(code, method, user)).thenReturn(logResponse);
@@ -94,11 +107,31 @@ public class LogAccessServiceTest {
   }
 
   @Test
+  public void testWithCommaSeparatedUser() throws Exception {
+    String code = null, method = null, user = "annstewart,aut";
+    when(mockLogerratorAccessor.getLogs(code, method, user)).thenReturn(new TreeSet<>());
+    assertEmptyResult(code, method, user);
+  }
+
+  @Test
+  public void testWithSpaceInUser() throws Exception {
+    String code = null, method = null, user = "ann stewart";
+    when(mockLogerratorAccessor.getLogs(code, method, user)).thenReturn(new TreeSet<>());
+    assertEmptyResult(code, method, user);
+  }
+
+  @Test
   public void testWithOnlyMethod() throws Exception {
     String code = null, method = "POST", user = null;
-
     when(mockLogerratorAccessor.getLogs(code, method, user)).thenReturn(logResponse);
     assertResult(code, method, user);
+  }
+
+  @Test
+  public void testWithCommaSeparatedMethod() throws Exception {
+    String code = null, method = "POST,GET", user = null;
+    when(mockLogerratorAccessor.getLogs(code, method, user)).thenReturn(new TreeSet<>());
+    assertEmptyResult(code, method, user);
   }
 
   @Test(expected = IOException.class)
