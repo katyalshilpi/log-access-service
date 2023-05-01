@@ -11,6 +11,7 @@ import javax.servlet.ServletException;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import org.assertj.core.util.VisibleForTesting;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpMethod;
@@ -28,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
  * <p>
  * Springboot service needs to be running for this smoke test java -Xmx500m -jar target/log-access-service.jar
  */
+@Ignore("This needs service to be running to succeed")
 public class SmokeIT {
 
   /**
