@@ -24,7 +24,7 @@ public class LogAccessService {
     return loggeratorAccessor.getLogs(code, method, user);
   }
 
-  public void streamLogsToKafka(String code, String method, String user) throws Exception {
-     loggeratorAccessor.streamLogsToKafka(code, method, user);
+  public Set<LogEntry> streamLogsToKafka(String code, String method, String user) throws Exception {
+     return loggeratorAccessor.streamLogsToKafka(code, method, user);
   }
 }

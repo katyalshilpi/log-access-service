@@ -13,11 +13,11 @@ public class KafkaProducer {
   private static final String logTopic = "jpmcLogs";
 
   @Autowired
-  KafkaTemplate<String, LogEntry> kafkaTemplate;
+  KafkaTemplate<String, String> kafkaTemplate;
 
   public void publish(LogEntry logEntry) {
     log.info("Publishing message - " + logEntry.toString() + " to topic - " + logTopic);
-    kafkaTemplate.send(logTopic, logEntry);
+    kafkaTemplate.send(logTopic, logEntry.toString());
   }
 
 }

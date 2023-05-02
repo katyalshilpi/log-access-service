@@ -95,7 +95,8 @@ public class LoggeratorAccessor {
     return logEntry;
   }
 
-  public void streamLogsToKafka(String code, String method, String user) throws Exception {
+  public Set<LogEntry> streamLogsToKafka(String code, String method, String user) throws Exception {
+    Set<LogEntry> logList = new TreeSet<>();
     // wait for a client to connect
     try (Socket clientSocket = new Socket(host, port)) {
       log.info("Client connected from - " + clientSocket.getInetAddress() + " to loggerator running on port - " + port);
@@ -107,6 +108,7 @@ public class LoggeratorAccessor {
           LogEntry logEntry = readLog(code, method, user, line);
           if(logEntry != null) {
             kafkaProducer.publish(logEntry);
+            logList.add(logEntry);
           }
         }
       }
@@ -119,6 +121,7 @@ public class LoggeratorAccessor {
       log.error("IO Exception thrown while establishing socket connection to loggerator - " + e.getMessage());
       throw e;
     }
+    return logList;
   }
 
   private boolean containsCode(String code, String logStatus) {
@@ -130,7 +133,7 @@ public class LoggeratorAccessor {
   }
 
   private boolean containsMethod(String method, String logRequest) {
-    return Strings.isNullOrEmpty(method) || method.startsWith("\"" + logRequest);
+    return Strings.isNullOrEmpty(method) || (logRequest != null && logRequest.startsWith("\"" + method));
   }
 
 }
