@@ -76,6 +76,21 @@ curl http://localhost:8080/version
 http://localhost:18080/swagger-ui/
 ```
 
+### Kafka 
+
+Install Kafka
+
+From the root folder of Apache Kafka, you can run ZooKeeper by executing the following command:
+```
+$ bin/zookeeper-server-start.sh config/zookeeper.properties
+```
+
+Open a new terminal window & run the following command from the root of Apache Kafka to start the Kafka environment:
+```
+bin/kafka-server-start.sh config/server.properties
+```
+
+
 ### Project Details
 
 ### The Logs

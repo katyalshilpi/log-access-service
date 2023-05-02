@@ -11,9 +11,11 @@ import java.util.regex.Pattern;
 
 import com.google.common.base.Strings;
 import com.jpmc.accessor.logs.v1.model.LogEntry;
+import com.jpmc.accessor.logs.v1.service.kafka.KafkaProducer;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +36,9 @@ public class LoggeratorAccessor {
   @Value("${loggerator.port}")
   private int port;
 
+  @Autowired
+  KafkaProducer kafkaProducer;
+
   public Set<LogEntry> getLogs(String code, String method, String user) throws Exception {
     long start = System.currentTimeMillis();
     // TODO This list could become a memory bottleneck for huge data, we need to decide how to manage this more efficiently
@@ -47,25 +52,10 @@ public class LoggeratorAccessor {
         // Append the log line to the logBuilder
         String line;
         while ((line = reader.readLine()) != null) {
-          Matcher matcher = PATTERN.matcher(line);
-          if (matcher.matches()) {
-            String remoteHost = matcher.group(1);
-            String rfc931 = matcher.group(2);
-            String authUser = matcher.group(3);
-            String dateStr = matcher.group(4);
-            String request = matcher.group(5);
-            String status = matcher.group(6);
-            String bytes = matcher.group(7);
-
-            if (containsCode(code, status) && containsUser(user, authUser) && containsMethod(method, request)) {
-              LogEntry logEntry = new LogEntry(remoteHost, rfc931, authUser, dateStr, request, status, bytes);
-              logList.add(logEntry);
-            }
+          LogEntry logEntry = readLog(code, method, user, line);
+          if(logEntry != null) {
+            logList.add(logEntry);
           }
-          else {
-            log.warn("Invalid log entry format - matcher could not match with the log entry - " + line);
-          }
-
         }
       }
       catch (IOException e) {
@@ -81,6 +71,54 @@ public class LoggeratorAccessor {
     long end = System.currentTimeMillis();
     log.info("Total time taken to fetch filtered logs: " + (end - start) / 1000 + "sec");
     return logList;
+  }
+
+  private LogEntry readLog(String code, String method, String user, String line) {
+    LogEntry logEntry = null;
+    Matcher matcher = PATTERN.matcher(line);
+    if (matcher.matches()) {
+      String remoteHost = matcher.group(1);
+      String rfc931 = matcher.group(2);
+      String authUser = matcher.group(3);
+      String dateStr = matcher.group(4);
+      String request = matcher.group(5);
+      String status = matcher.group(6);
+      String bytes = matcher.group(7);
+
+      if (containsCode(code, status) && containsUser(user, authUser) && containsMethod(method, request)) {
+        logEntry = new LogEntry(remoteHost, rfc931, authUser, dateStr, request, status, bytes);
+      }
+    }
+    else {
+      log.warn("Invalid log entry format - matcher could not match with the log entry - " + line);
+    }
+    return logEntry;
+  }
+
+  public void streamLogsToKafka(String code, String method, String user) throws Exception {
+    // wait for a client to connect
+    try (Socket clientSocket = new Socket(host, port)) {
+      log.info("Client connected from - " + clientSocket.getInetAddress() + " to loggerator running on port - " + port);
+
+      try (BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
+        // Append the log line to the logBuilder
+        String line;
+        while ((line = reader.readLine()) != null) {
+          LogEntry logEntry = readLog(code, method, user, line);
+          if(logEntry != null) {
+            kafkaProducer.publish(logEntry);
+          }
+        }
+      }
+      catch (IOException e) {
+        log.error("Exception thrown while reading from loggerator - " + e.getMessage());
+        throw e;
+      }
+    }
+    catch (IOException e) {
+      log.error("IO Exception thrown while establishing socket connection to loggerator - " + e.getMessage());
+      throw e;
+    }
   }
 
   private boolean containsCode(String code, String logStatus) {
