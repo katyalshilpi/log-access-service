@@ -92,7 +92,7 @@ public class LoggeratorAccessor {
   }
 
   private boolean containsMethod(String method, String logRequest) {
-    return Strings.isNullOrEmpty(method) || method.startsWith("\"" + logRequest);
+    return Strings.isNullOrEmpty(method) || (logRequest != null && logRequest.startsWith("\"" + method));
   }
 
 }
