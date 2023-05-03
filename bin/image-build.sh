@@ -12,7 +12,7 @@ export img=log-access-service
 # just use tag as 1 since no git in interview project    
 export tag=1
 
-DOCKER_BUILDKIT=0 docker build -–progress=plain -t $img:$tag .
+DOCKER_BUILDKIT=1 docker build -t $img:$tag .
 docker tag $img:$tag $img:latest
 
 # list images to visually confirm success
