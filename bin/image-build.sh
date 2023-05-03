@@ -14,7 +14,7 @@ export tag=1
 
 mvn clean package
 
-docker build -t $img:$tag .
+docker build --progress=plain --no-cache -t $img:$tag .
 docker tag $img:$tag $img:latest
 
 # list images to visually confirm success
