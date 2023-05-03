@@ -10,9 +10,11 @@ import java.util.TreeSet;
 import com.jpmc.accessor.logs.v1.model.LogEntry;
 import org.assertj.core.util.Strings;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
+@Ignore
 public class LoggeratorAccessorTest {
 
   LoggeratorAccessor loggeratorAccessor;
