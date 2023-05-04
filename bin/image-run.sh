@@ -13,6 +13,9 @@ then
 else
     docker-compose --file $COMPOSE_FILE up
 
-    # cleanup
+    # cleanup - Delete the containers
     docker-compose --file $COMPOSE_FILE rm --force
 fi
+
+#Delete the old images to pull the latest - This can be removed when we want to use the previous images
+docker rmi log-access-service:latest
